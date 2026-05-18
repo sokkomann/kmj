@@ -57,6 +57,7 @@ jobs:
             --build-arg AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
             --build-arg AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} \
             --build-arg AWS_REGION=${{ secrets.AWS_REGION }} \
+            --build-arg GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
             --build-arg KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
             --build-arg KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
             --build-arg NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
@@ -86,6 +87,7 @@ jobs:
             -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
             -e AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} \
             -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            -e GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
             -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
             -e KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
             -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \

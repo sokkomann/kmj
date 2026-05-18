@@ -112,7 +112,7 @@ COPY /app/build/libs/app-0.0.1-SNAPSHOT.jar app.jar
 # 포트 오픈
 EXPOSE 10000
 
-# 실행 명령어
+# 실행 명령어임
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 

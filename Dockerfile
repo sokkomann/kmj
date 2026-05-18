@@ -1,4 +1,4 @@
-# 빌드 할 때에는 jdk 17버전을 사용하겠다!
+# 빌드 할 때에는 jdk 17버전을 사용하겠다
 FROM eclipse-temurin:17-jdk AS build
 
 ARG EC2_HOST
@@ -18,15 +18,6 @@ ENV PSQL_PASSWORD=${PSQL_PASSWORD}
 
 ARG REDIS_PORT
 ENV REDIS_PORT=${REDIS_PORT}
-
-ARG RABBITMQ_PORT
-ENV RABBITMQ_PORT=${RABBITMQ_PORT}
-
-ARG RABBITMQ_USERNAME
-ENV RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
-
-ARG RABBITMQ_PASSWORD
-ENV RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
 
 ARG GOOGLE_APP_USERNAME
 ENV GOOGLE_APP_USERNAME=${GOOGLE_APP_USERNAME}
@@ -107,7 +98,7 @@ ENV TZ=Asia/Seoul
 
 # /app/build/libs/app-0.0.1-SNAPSHOT.jar 이름을 app.jar로 쓰겠다.
 # JAR 파일 복사
-COPY /app/build/libs/app-0.0.1-SNAPSHOT.jar app.jar
+COPY /app/build/libs/back-0.0.1-SNAPSHOT.jar app.jar
 
 # 포트 오픈
 EXPOSE 10000

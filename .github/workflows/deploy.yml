@@ -44,7 +44,8 @@ jobs:
           docker stop app || true
           docker rm app || true
           docker rmi app || true
-          docker build --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
+          docker build \
+            --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
             --build-arg PSQL_PORT=${{ secrets.PSQL_PORT }} \
             --build-arg PSQL_DATABASE=${{ secrets.PSQL_DATABASE }} \
             --build-arg PSQL_USERNAME=${{ secrets.PSQL_USERNAME }} \

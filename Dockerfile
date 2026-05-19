@@ -104,7 +104,7 @@ ENV TZ=Asia/Seoul
 
 # /app/build/libs/app-0.0.1-SNAPSHOT.jar 이름을 app.jar로 쓰겠다.
 # JAR 파일 복사
-COPY /app/build/libs/back-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/back-0.0.1-SNAPSHOT.jar app.jar
 
 # 포트 오픈
 EXPOSE 10000

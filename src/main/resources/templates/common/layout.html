@@ -13,7 +13,7 @@
 </head>
 <body>
 <main class="Page-Layout" id="mainPage">
-    <header th:replace="/common/header::header"></header>
+    <header th:replace="common/header::header"></header>
 
     <th:block layout:fragment="content"></th:block>
 
@@ -21,7 +21,7 @@
         <div th:replace="~{video_ai/video_ai :: videoAi}"></div>
     </th:block>
 
-    <footer th:replace="/common/footer::footer"></footer>
+    <footer th:replace="common/footer::footer"></footer>
 </main>
     <th:block layout:fragment="modals"></th:block>
     <div th:replace="~{common/compose-modal :: composeModal}"></div>

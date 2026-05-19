@@ -2,7 +2,7 @@
     // -------------------------------------------------------
     // LiveKit 설정
     // -------------------------------------------------------
-    let APPLICATION_SERVER_URL = "https://localhost:6080/";
+    let APPLICATION_SERVER_URL = "https://3.36.143.103:6080/";
     let LIVEKIT_URL = "wss://test-7paroumk.livekit.cloud";
     const LivekitClient = window.LivekitClient;
 

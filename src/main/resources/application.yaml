@@ -3,10 +3,6 @@ server:
   servlet:
     session:
       tracking-modes: cookie
-  ssl:
-    enabled: true
-    certificate: classpath:key/globalgates+3.pem
-    certificate-private-key: classpath:key/globalgates+3-key.pem
 
 
 spring:

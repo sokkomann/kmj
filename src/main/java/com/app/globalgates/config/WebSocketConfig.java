@@ -29,12 +29,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // 운영 도메인이 추가되면 아래 패턴에 명시할 것 — 와일드카드 "*" 금지
         registry.addEndpoint("/ws/chat")
                 .setAllowedOriginPatterns(
-                        "https://localhost:*",
-                        "http://localhost:*",
+                        "https://3.36.143.103:*",
+                        "http://3.36.143.103:*",
                         "https://127.0.0.1:*",
                         "http://127.0.0.1:*",
-                        "https://*.globalgates.com",
-                        "https://globalgates.com"
+                        "https://*.global-gates.com",
+                        "https://global-gates.com"
                 )
                 .addInterceptors(handshakeInterceptor)
                 .withSockJS();

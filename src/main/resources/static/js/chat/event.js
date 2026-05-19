@@ -93,8 +93,8 @@ window.onload = () => {
     // 1-9. LiveKit 서버 URL 자동 설정
     function configureLiveKitUrl() {
         if (!LIVEKIT_SERVER_URL) {
-            if (window.location.hostname === "localhost") {
-                LIVEKIT_SERVER_URL = "https://localhost:6080";
+            if (window.location.hostname === "3.36.143.103") {
+                LIVEKIT_SERVER_URL = "https://3.36.143.103:6080";
             } else {
                 LIVEKIT_SERVER_URL = "https://" + window.location.hostname + ":6443";
             }

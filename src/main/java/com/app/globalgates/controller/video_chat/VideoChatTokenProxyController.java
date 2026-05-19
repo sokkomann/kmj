@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 public class VideoChatTokenProxyController {
 
-    private static final String LIVEKIT_SERVER_URL = "https://localhost:6080/token";
+    private static final String LIVEKIT_SERVER_URL = "https://3.36.143.103:6080/token";
 
     @PostMapping("token")
     public ResponseEntity<Map<String, String>> proxyToken(

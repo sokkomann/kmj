@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/ai")
 public class AIController {
-    private final WebClient webClient = WebClient.create("http://localhost:8000");
+    private final WebClient webClient = WebClient.create("http://3.36.143.103:8000");
 
     @PostMapping("/predict-tag")
     @ResponseBody

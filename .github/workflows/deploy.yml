@@ -72,6 +72,7 @@ jobs:
             --build-arg MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}" \
             --build-arg MESSAGE_API_KEY=${{ secrets.MESSAGE_API_KEY }} \
             --build-arg MESSAGE_API_SECRET_KEY=${{ secrets.MESSAGE_API_SECRET_KEY }} \
+            --build-arg AI_FASTAPI_BASE_URL=${{ secrets.AI_FASTAPI_BASE_URL }} \
           -t app .
           docker run -d -p 80:10000 --name app \
             -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
@@ -102,6 +103,7 @@ jobs:
             -e MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}" \
             -e MESSAGE_API_KEY=${{ secrets.MESSAGE_API_KEY }} \
             -e MESSAGE_API_SECRET_KEY=${{ secrets.MESSAGE_API_SECRET_KEY }} \
+            -e AI_FASTAPI_BASE_URL=${{ secrets.AI_FASTAPI_BASE_URL }} \
             app
         EOF
 

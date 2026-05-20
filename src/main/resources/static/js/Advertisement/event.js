@@ -172,7 +172,7 @@ window.onload = () => {
         return {
             adTitle:    getFormValue("adTitle")   || "광고 제목을 입력해 주세요",
             headline:   getFormValue("headline")  || "헤드라인을 입력해 주세요",
-            landingUrl: getFormValue("landingUrl")|| "https://globalgates.com",
+            landingUrl: getFormValue("landingUrl")|| "https://global-gates.com",
             adBody:     getFormValue("adBody")    || "광고 내용을 입력하면 여기에 바로 반영됩니다.",
             budget:     getBudgetAmount(),
             attachment: getAttachmentLabel(),

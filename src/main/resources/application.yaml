@@ -81,6 +81,10 @@ google:
   maps:
     api-key: "${GOOGLE_MAPS_API_KEY}"
 
+ai:
+  fastapi:
+    base-url: "${AI_FASTAPI_BASE_URL}"
+
 bootpay:
   application-id: ${BOOTPAY_APPLICATION_ID}
   private-key: "${BOOTPAY_PRIVATE_KEY}"

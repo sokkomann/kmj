@@ -5,6 +5,7 @@ import com.app.globalgates.dto.ai.ImageDescribeResponse;
 import com.app.globalgates.dto.ai.PredictTagResponse;
 import com.app.globalgates.dto.ai.PredictViewResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,11 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/ai")
 public class AIController {
-    private final WebClient webClient = WebClient.create("http://3.36.143.103:8000");
+    private final WebClient webClient;
+
+    public AIController(@Value("${AI_FASTAPI_BASE_URL}") String fastapiBaseUrl) {
+        this.webClient = WebClient.create(fastapiBaseUrl);
+    }
 
     @PostMapping("/predict-tag")
     @ResponseBody

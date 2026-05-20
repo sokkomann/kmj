@@ -233,7 +233,7 @@ const mypageLayout = (() => {
 
         const avatarHtml = post.memberProfileFileName
             ? `<div class="postAvatar postAvatar--image"><img class="postAvatarImage" src="${post.memberProfileFileName}" alt="프로필 이미지"></div>`
-            : `<div class="postAvatar">${(post.memberNickname || post.memberHandle || "?").charAt(0)}</div>`;
+            : `<div class="postAvatar"><img class="postAvatarImage" src="/images/profile/default_image.png"></div>`;
 
         const communityMetaHtml = post.communityId && post.communityName
             ? `<div class="Post-Community-Meta">
@@ -417,11 +417,11 @@ const mypageLayout = (() => {
                     <strong class="Request-Product-Title">${estimation.productTitle}</strong>
                     <div class="Request-Product-Meta">
                         ${estimation.productStock != null
-                            ? `<span class="Request-Product-Stock">수량 ${formatEstimationNumber(estimation.productStock)}</span>`
-                            : ""}
+                ? `<span class="Request-Product-Stock">수량 ${formatEstimationNumber(estimation.productStock)}</span>`
+                : ""}
                         ${estimation.productPrice != null
-                            ? `<span class="Request-Product-Price">${formatEstimationNumber(estimation.productPrice)}원</span>`
-                            : ""}
+                ? `<span class="Request-Product-Price">${formatEstimationNumber(estimation.productPrice)}원</span>`
+                : ""}
                     </div>
                 </div>
             `
@@ -433,18 +433,18 @@ const mypageLayout = (() => {
                     <div class="Request-Partner">
                         <strong class="Request-Partner-Name">${partnerDisplay}</strong>
                         ${partnerHandleText
-                            ? `<span class="Request-Partner-Handle">${partnerHandleText}</span>`
-                            : ""}
+            ? `<span class="Request-Partner-Handle">${partnerHandleText}</span>`
+            : ""}
                     </div>
                     <div class="Request-Title">${estimation.title ?? ""}</div>
                     ${productSection}
                     <div class="Request-With">
                         ${(() => {
-                            const statusLabel = formatEstimationStatusLabel(estimation.status);
-                            return statusLabel
-                                ? `<span class="With-People">${statusLabel}</span>`
-                                : "";
-                        })()}
+            const statusLabel = formatEstimationStatusLabel(estimation.status);
+            return statusLabel
+                ? `<span class="With-People">${statusLabel}</span>`
+                : "";
+        })()}
                         <span class="With-People">${createdAt}</span>
                     </div>
                 </div>

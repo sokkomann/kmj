@@ -976,24 +976,26 @@ window.onload = () => {
     // 수정
     document.getElementById("postDetailMoreEdit")?.addEventListener("click", () => {
         if (!activeMoreMeta) return;
+        const editPostId = activeMoreMeta.postId;   // closeMoreDrop() 전에 캡처
         closeMoreDrop();
-        window.location.href = "/main/post/detail/" + activeMoreMeta.postId + "?memberId=" + memberId;
+        window.location.href = "/main/post/detail/" + editPostId + "?memberId=" + memberId;
     });
 
     // 삭제
     document.getElementById("postDetailMoreDelete")?.addEventListener("click", async () => {
         if (!activeMoreMeta) return;
+        const targetPostId = activeMoreMeta.postId;   // closeMoreDrop() 전에 캡처
         closeMoreDrop();
         if (!confirm("게시물을 삭제할까요? 삭제된 게시물은 복구할 수 없습니다.")) return;
         // 본문 게시글이면 메인으로, 댓글이면 비동기 삭제
-        if (activeMoreMeta.postId === String(postId)) {
+        if (targetPostId === String(postId)) {
             const form = document.createElement("form");
             form.method = "POST";
             form.action = "/main/post/detail/delete/" + postId;
             document.body.appendChild(form);
             form.submit();
         } else {
-            await service.deletePost(activeMoreMeta.postId);
+            await service.deletePost(targetPostId);
             showToast("게시물이 삭제되었습니다");
             await refreshReplies();
         }

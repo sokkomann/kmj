@@ -28,51 +28,17 @@ public class SubscriptionService {
     private final SubscriptionDAO subscriptionDAO;
     private final MemberDAO memberDAO;
     private final BadgeDAO badgeDAO;
-    private final BootpayBillingService bootpayBillingService;
-    private final PaymentSubscribeService paymentSubscribeService;
 
     //    검사
     @CacheEvict(value = {"post:list", "post", "community:post:list", "member", "community:member:list"}, allEntries = true)
     public void managingSchedule() {
         List<SubscriptionDTO> checkSubList = subscriptionDAO.findExpiredMembers();
         checkSubList.forEach((each) -> {
-            //    월간갱신 (quartz=true) -> 빌링키로 정기결제 청구 후 만료일 갱신
+            //    월간갱신 (quartz=true)
             if(each.isQuartz() && each.getBillingCycle().equals("monthly")){
-                log.info("월갱신 들어옴 — 빌링키 청구 시도함.");
-
-                if (each.getBillingKey() == null || each.getBillingKey().isBlank()) {
-                    log.warn("빌링키 없음 — 만료 처리. subscriptionId={}", each.getId());
-                    expireSubscription(each);
-                    return;
-                }
-
-                String orderId = "SUB_RENEW_" + each.getMemberId() + "_" + System.currentTimeMillis();
-                String orderName = each.getTier().getValue() + " 월간 갱신";
-                BootpayBillingService.BillingResult result = bootpayBillingService.charge(
-                        each.getBillingKey(),
-                        each.getAmount(),
-                        orderName,
-                        orderId,
-                        orderName,
-                        each.getMemberId()
-                );
-
-                if (result.isSuccess()) {
-                    subscriptionDAO.setExpiresAt(each.getId());
-                    PaymentSubscribeDTO payment = new PaymentSubscribeDTO();
-                    payment.setSubscriptionId(each.getId());
-                    payment.setMemberId(each.getMemberId());
-                    payment.setAmount(each.getAmount());
-                    payment.setPaymentStatus(PaymentStatus.COMPLETED);
-                    payment.setPaymentMethod("billing");
-                    payment.setReceiptId(result.getReceiptId());
-                    payment.setPaidAt(java.time.LocalDateTime.now().toString());
-                    paymentSubscribeService.save(payment);
-                    log.info("월간 정기결제 갱신 성공 receiptId={}", result.getReceiptId());
-                } else {
-                    log.warn("월간 정기결제 갱신 실패 — 만료 처리. message={}", result.getMessage());
-                    expireSubscription(each);
-                }
+                log.info("월갱신 들어옴");
+                subscriptionDAO.setExpiresAt(each.getId());
+                log.info("만료일 갱신됨");
             }
             //    그 외 -> 만료 처리
             else {
@@ -80,7 +46,6 @@ public class SubscriptionService {
                 expireSubscription(each);
             }
         }
-
         );
     }
 
@@ -117,48 +82,9 @@ public class SubscriptionService {
         Long memberId = subscriptionDTO.getMemberId();
         SubscriptionTier tier = subscriptionDTO.getTier();
 
-        //    월간 + 빌링키가 있으면: 프론트가 보낸 값은 receipt_id 이므로 실제 billing_key 로 변환 후 저장
-        boolean isMonthlyBilling = "monthly".equals(subscriptionDTO.getBillingCycle())
-                && subscriptionDTO.getBillingKey() != null
-                && !subscriptionDTO.getBillingKey().isBlank();
-        if (isMonthlyBilling) {
-            String resolvedBillingKey = bootpayBillingService.resolveBillingKey(subscriptionDTO.getBillingKey());
-            log.info("billing_key 변환 — receipt_id={} → billing_key={}",
-                    subscriptionDTO.getBillingKey(), resolvedBillingKey);
-            subscriptionDTO.setBillingKey(resolvedBillingKey);
-        }
-
         subscriptionDTO.setStatus(SubscriptionStatus.ACTIVE);
         subscriptionDAO.save(subscriptionDTO);
         log.info("들어옴2");
-
-        if (isMonthlyBilling) {
-            log.info("월간 정기결제 첫 청구 시작");
-            String orderId = "SUB_FIRST_" + memberId + "_" + System.currentTimeMillis();
-            String orderName = tier.getValue() + " 월간";
-            BootpayBillingService.BillingResult result = bootpayBillingService.charge(
-                    subscriptionDTO.getBillingKey(),
-                    subscriptionDTO.getAmount(),
-                    orderName,
-                    orderId,
-                    orderName,
-                    memberId
-            );
-            if (!result.isSuccess()) {
-                throw new RuntimeException("첫 정기결제 실패: " + result.getMessage());
-            }
-            //    결제 기록 저장
-            PaymentSubscribeDTO payment = new PaymentSubscribeDTO();
-            payment.setSubscriptionId(subscriptionDTO.getId());
-            payment.setMemberId(memberId);
-            payment.setAmount(subscriptionDTO.getAmount());
-            payment.setPaymentStatus(PaymentStatus.COMPLETED);
-            payment.setPaymentMethod("billing");
-            payment.setReceiptId(result.getReceiptId());
-            payment.setPaidAt(java.time.LocalDateTime.now().toString());
-            paymentSubscribeService.save(payment);
-            log.info("월간 정기결제 첫 청구 성공 receiptId={}", result.getReceiptId());
-        }
 
         //    expert 구독은 member_role을 expert로 변경
         if (tier == SubscriptionTier.EXPERT) {

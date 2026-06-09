@@ -1,13 +1,11 @@
 const subscribeService = (() => {
 
-    // 구독 등록 (subscriptionId 반환)
-    // 월간 정기결제: billingKey + amount 함께 전달 → 백엔드가 첫 결제까지 처리
-    // 연간/free: billingKey 생략 (또는 null)
-    const subscribe = async (tier, billingCycle, expiresAt, billingKey, amount) => {
+    // 구독 등록 (subscriptionId 반환) - 단건 결제
+    const subscribe = async (tier, billingCycle, expiresAt) => {
         const response = await fetch("/api/subscriptions/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tier, billingCycle, expiresAt, billingKey, amount }),
+            body: JSON.stringify({ tier, billingCycle, expiresAt }),
         });
         return await response.json();
     };

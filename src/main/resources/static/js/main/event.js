@@ -827,9 +827,11 @@ window.onload = () => {
     });
 
     document.getElementById("searchResultTopic").addEventListener("click", async (e) => {
+        e.preventDefault();
         const keyword = searchInput.value.trim();
         if (keyword) {
             await service.saveSearchHistory(memberId, keyword);
+            window.location.href = `/explore/search?keyword=${encodeURIComponent(keyword)}`;
         }
     });
 

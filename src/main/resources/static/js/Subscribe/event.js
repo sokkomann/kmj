@@ -71,22 +71,22 @@ window.onload = () => {
         };
     }
 
-    // function calcExpiresAt(billingCycle) {
-    //     const now = new Date();
-    //     const expiresAt = new Date(now);
-    //     if (billingCycle === "annual") {
-    //         expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-    //     } else {
-    //         expiresAt.setMonth(expiresAt.getMonth() + 1);
-    //     }
-    //     return expiresAt.toISOString().slice(0, 10);
-    // }
-
     function calcExpiresAt(billingCycle) {
         const now = new Date();
-        const expiresAt = new Date(now.getTime() + 1 * 60 * 1000 + 9 * 60 * 60 * 1000); // 1분 뒤
-        return expiresAt.toISOString().slice(0, 19).replace("T", " ");
+        const expiresAt = new Date(now);
+        if (billingCycle === "annual") {
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        } else {
+            expiresAt.setMonth(expiresAt.getMonth() + 1);
+        }
+        return expiresAt.toISOString().slice(0, 19);
     }
+
+    // function calcExpiresAt(billingCycle) {
+    //     const now = new Date();
+    //     const expiresAt = new Date(now.getTime() + 1 * 60 * 1000 + 9 * 60 * 60 * 1000); // 1분 뒤
+    //     return expiresAt.toISOString().slice(0, 19).replace("T", " ");
+    // }
 
     // 현재 구독중인 플랜 가격
     function getMyPlanPrice() {
@@ -105,20 +105,6 @@ window.onload = () => {
         await subscribeService.savePayment(subscriptionId, plan.amountValue, bootpayData);
         console.log("결제성공 들어옴2");
         alert("구독이 완료되었습니다!");
-        location.href = "/main/main";
-    };
-
-    // 월간 정기결제: 빌링키 발급만 받고 첫 결제 + 결제 기록 저장
-    const onSubscriptionIssued = async (plan, billingKey) => {
-        console.log("정기결제 빌링키 발급 성공");
-        await subscribeService.subscribe(
-            plan.tier,
-            plan.billingCycle,
-            calcExpiresAt(plan.billingCycle),
-            billingKey,
-            plan.amountValue
-        );
-        alert("정기 구독이 완료되었습니다!");
         location.href = "/main/main";
     };
 
@@ -155,14 +141,9 @@ window.onload = () => {
         console.log("들어옴12 신규구독");
         if (plan.amountValue <= 0) return;
 
-        const isMonthly = plan.billingCycle === "monthly";
         const successHandler = async (data) => await onPaymentSuccess(plan, data);
 
         if (typeof Bootpay === "undefined") {
-            if (isMonthly) {
-                alert("정기결제를 진행할 수 없습니다.");
-                return;
-            }
             const demoResult = {
                 price: plan.amountValue,
                 method: "데모",
@@ -184,38 +165,7 @@ window.onload = () => {
         ];
 
         try {
-            // 월간: 빌링키 발급 → 첫 결제 + 결제 기록 저장
-            if (isMonthly) {
-                const response = await Bootpay.requestSubscription({
-                    application_id: "69604bf2b6279cebf60ad115",
-                    order_name: plan.orderName,
-                    subscription_id: plan.orderId,
-                    pg: "라이트페이",
-                    tax_free: 0,
-                    user: userInfo,
-                    items: items,
-                    extra: { open_type: "iframe" },
-                });
-                console.log("requestSubscription 풀 응답:", JSON.stringify(response, null, 2));
-
-                // 실제 billing_key 는 응답에 별도로 있음. receipt_id 는 영수증 ID 일 뿐.
-                const data = response?.data ?? response ?? {};
-                const billingKey = data.billing_key
-                    ?? response?.billing_key
-                    ?? data.receipt_id
-                    ?? response?.receipt_id;
-
-                if (!billingKey) {
-                    console.error("빌링키 발급 실패 — 응답에서 billing_key/receipt_id 못 찾음", response);
-                    alert("빌링키 발급에 실패했습니다.");
-                    return;
-                }
-
-                await onSubscriptionIssued(plan, billingKey);
-                return;
-            }
-
-            // 연간: 단건 결제 (기존 흐름)
+            // 단건 결제
             const response = await Bootpay.requestPayment({
                 application_id: "69604bf2b6279cebf60ad115",
                 price: plan.amountValue,
@@ -363,21 +313,7 @@ window.onload = () => {
         footerPlanName.textContent = plan.displayName;
 
         if (myPlan) {
-            // 플랜 변경 예약 확인
-            const hasNextPlan = mySubscription.nextTier && mySubscription.nextTier !== "";
-            // 해지 예약된 사용자 (월간 + quartz=false + next_tier 없음)
-            const isCancelReserved = mySubscription.billingCycle === "monthly" && !mySubscription.quartz && !hasNextPlan;
-
-            if (hasNextPlan) {
-                console.log("들어옴 플랜변경예약됨 상태");
-                const nextPlanName = planMap[mySubscription.nextTier];
-                const nextDisplayName = nextPlanName ? priceData[nextPlanName]?.displayName : mySubscription.nextTier;
-                footerPrice.textContent = "플랜 변경 예약됨";
-                footerPeriod.textContent = "";
-                footerBilling.textContent = `만료 후 ${nextDisplayName} 플랜으로 전환 예정`;
-                btnLabel.textContent = "플랜 변경";
-                payBtn.disabled = true;
-            } else if (isCancelReserved) {
+            if (isCancelReserved) {
                 console.log("들어옴 해지예약됨 상태");
                 footerPrice.textContent = "해지 예약됨";
                 footerPeriod.textContent = "";
@@ -495,8 +431,6 @@ window.onload = () => {
             }
         });
     }
-
-
 
     syncToggleState();
     syncVisiblePlans();

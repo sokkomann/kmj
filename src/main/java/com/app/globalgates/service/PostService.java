@@ -291,10 +291,12 @@ public class PostService {
         //    태그 수정 (원래 묶인 관계 삭제하고 저장)
         postHashtagDAO.deleteRelByPostId(postDTO.getId());
         postDTO.getHashtags().forEach(hashtagDTO -> {
-            postHashtagDAO.save(hashtagDTO);
-            if (hashtagDTO.getId() == null) {
-                hashtagDTO.setId(postHashtagDAO.findByTagName(hashtagDTO.getTagName())
-                        .orElseThrow().getId());
+            // 작성(writePost)과 동일하게: 기존 태그면 재사용, 없을 때만 insert (tag_name UNIQUE 위반 방지)
+            Optional<PostHashtagDTO> foundHashtag = postHashtagDAO.findByTagName(hashtagDTO.getTagName());
+            if (foundHashtag.isEmpty()) {
+                postHashtagDAO.save(hashtagDTO);
+            } else {
+                hashtagDTO.setId(foundHashtag.get().getId());
             }
             postHashtagDAO.saveRel(postDTO.getId(), hashtagDTO.getId());
         });

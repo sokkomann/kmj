@@ -24,7 +24,8 @@
 - 머니투데이: 벤처·스타트업 **72%**가 "해외 진출 시 바이어 발굴이 가장 어렵다"
 - 2023년 중소기업 해외진출 실태조사: 바이어 정보 부족, 발굴 비용, 전문 인력 부족이 공통적 애로사항
 
-수요(해외진출 의지 98%)는 충분히 있지만, **국내 중소기업과 해외 바이어를 연결할 효율적 채널이 부족**하다는 것을 확인할 수 있습니다.
+수요(해외진출 의지 98%)는 충분히 있지만,  
+**국내 중소기업과 해외 바이어를 연결할 효율적 채널이 부족**하다는 것을 확인할 수 있습니다.
 
 ### → GlobalGates
 
@@ -50,7 +51,9 @@ GlobalGates는 무역 기반 비즈니스 소셜 마켓 플랫폼으로, 국내 
 
 <img src="./README_images/graph_images/gg_1.PNG">
 
-→ 2008년의 글로벌 규모의 경제위기, 2015년 시점의 경제위기와 더불어 메르스 창궐, 2019년의 코로나19로 인한 범지구적 경제적 위기를 겪은 연도를 제외하고는 대한민국의 수입수출 경제시장은 크게 성장. 2000년 약 **1,723억 달러** → 2025년 약 **7,093억 달러**로 4배 이상 확대.
+→ 2008년의 글로벌 규모의 경제위기, 2015년 시점의 경제위기와 더불어 메르스 창궐,  
+2019년의 코로나19로 인한 범지구적 경제적 위기를 겪은 연도를 제외하고는 대한민국의  
+수입수출 경제시장은 크게 성장. 2000년 약 **1,723억 달러** → 2025년 약 **7,093억 달러**로 4배 이상 확대.
 
 ---
 
@@ -58,7 +61,8 @@ GlobalGates는 무역 기반 비즈니스 소셜 마켓 플랫폼으로, 국내 
 
 <img src="./README_images/graph_images/gg_2.PNG">
 
-→ 대기업 라인이 총 수출 라인과 거의 같은 기울기로 상승하는 반면, 중소기업·중견기업 라인은 1,000억 달러 부근에서 거의 정체. **시장 전체 성장의 대부분은 대기업이 흡수**하고 있음.
+→ 대기업 라인이 총 수출 라인과 거의 같은 기울기로 상승하는 반면,  
+중소기업·중견기업 라인은 1,000억 달러 부근에서 거의 정체. **시장 전체 성장의 대부분은 대기업이 흡수**하고 있음.
 
 ---
 
@@ -66,7 +70,8 @@ GlobalGates는 무역 기반 비즈니스 소셜 마켓 플랫폼으로, 국내 
 
 <img src="./README_images/graph_images/gg_3.PNG">
 
-→ 2009년 **21.1%** → 2024년 **16.2%**로 약 **-5%p** 감소. 중소기업의 절대 수출액은 768억 → 1,110억 달러로 늘었지만, 시장 점유율 관점에서는 지속적으로 후퇴.
+→ 2009년 **21.1%** → 2024년 **16.2%**로 약 **-5%p** 감소.  
+중소기업의 절대 수출액은 768억 → 1,110억 달러로 늘었지만, 시장 점유율 관점에서는 지속적으로 후퇴.
 
 ---
 
@@ -157,6 +162,129 @@ body: JSON.stringify({
   결제 저장시 amount 에 bootpayResponse.price 를 넣었으나 null 전달.  
   plan.amountValue 로 항상 금액이 들어가도록 수정.  
   - 구독 시 tbl_payment_subscribe 에 결제 금액이 잘 저장됨.
+
+---
+
+## AI
+
+| AI모델 | 기능 요약 | 사용 기술 |
+| --- | --- | --- |
+| 태그 추천 | 형태소 분석 + 사전 학습 모델로 광고 태그 제안 | Konlpy Okt |
+| 조회수 예측 | TF-IDF 유사도 기반 가중평균으로 신규 게시글 조회수 추정 | TF-IDF · Cosine Similarity |
+| 피드 챗봇 | FAISS RAG + Redis 시맨틱 캐시로 피드 기반 대화 응답 | LangChain · FAISS · Redis |
+
+---
+
+### AI-1. - 광고 등록 시, 태그 예측: Okt, CountVectorize, MultinomialNB
+
+> **기능**: 광고를 등록하는 동안 광고의 제목과 본문을 분석해 어울리는 태그 3개를 즉시 제안
+
+광고를 등록, 신청하는 과정에서 제목과 본문을 분석해 어울리는 태그를 예측하는 모델.  
+사전에 학습된 분류 모델(`pkl/ad_tag_model.pkl`)과 LabelEncoder(`pkl/ad_tag_encoded.pkl`)를 가져와서,  
+형태소 분석으로 추출한 명사를 입력 피처로 사용한다.
+
+#### 작동
+
+- Konlpy Okt 기반 한국어 명사 추출
+- `predict_proba` 결과 정렬 후 상위 3개 태그 반환
+- LabelEncoder를 이용한 클래스 → 태그 이름 매핑
+
+#### 코드
+
+`post_contents = " ".join(self.okt.nouns(post_contents))`
+
+제목과 본문을 합친 텍스트에서 한국어 명사만 추출해 학습 당시 입력 형식과 동일하게 맞춤.
+
+`proba = self.model.predict_proba([post_contents])[0]`
+
+분류 모델로 각 태그별 확률을 계산한 뒤, 내림차순 정렬해 상위 3개 클래스를 LabelEncoder로 태그 단어에 매핑함.
+
+---
+
+### AI-2. - 게시글 등록 시, 예상 조회수 분석: TFIDF, 벡터 유사도
+
+> **기능**: 작성 중인 글이 게시되었을 때의 예상 조회수를 미리 보아 이용자가 가늠하도록 함.
+
+작성 중인 글과 가장 비슷한 기존 게시글들을 찾아 그 조회수를 가중 평균하여 예상 조회수를 추정한다.  
+서버 실행시 `피드목록` 에서 게시글들을 모두 읽어와 TFIDF로 미리 구축해 두고,  
+요청이 들어오면 새 글을 동일하게 변환해 코사인 유사도를 계산합니다.
+
+#### 작동
+
+- FASTAPI 부팅시 active 상태의 게시글을 DB에서 로드한 뒤 TFIDF 벡터화
+- 본문 + 태그를 합쳐 명사 단위로 토큰화
+- 코사인 유사도 상위 5개 게시글 추출
+- 유사도 점수를 가중치로 한 조회수 가중평균
+- 예상 조회수, 최대/최소 조회수 함께 반환
+
+#### 코드
+
+`sim_scores = cosine_similarity(new_post_matrix, self.tfidf_matrix)`
+
+새 글의 TF-IDF 벡터와 부팅 시 만들어둔 기존 피드 사이의 코사인 유사도를 한 번에 계산함.
+
+`sim_indices = sim_scores.argsort()[0][::-1][:5]`
+
+유사도 점수를 내림차순 정렬해 가장 비슷한 상위 5개 게시글의 인덱스를 뽑아낸다.
+
+`predicted_view_count = np.dot(new_post_sim_scores, sim_view_counts) / new_post_sim_scores.sum()`
+
+상위 5개 유사 게시글의 실제 조회수를 유사도 점수로 가중평균하여 새 글의 예상 조회수를 산출한다.
+
+---
+
+### AI-3. - 지능형 피드 큐레이션 및 답변 생성: Generative Search, Context-Aware 리트리벌
+
+> **기능**: 최근 피드에 어떤 이야기가 오가는지를 질문 한 번으로 확인 하도록 보조
+
+사이트에 올라온 피드를 활용해 사용자의 질문에 답하는 RAG 챗봇으로,  
+LangChain + FAISS로 벡터스토어를 구성하고, Redis를 활용한  
+시맨틱 캐시로 비슷한 질문은 LLM 호출 없이 즉시 응답한다.
+
+#### 작동
+
+```
+[1] 피드 본문 로드 (DB → feed_contents.txt)
+    ↓
+[2] RecursiveCharacterTextSplitter 로 200자 청크 분할
+    ↓
+[3] 한국어 임베딩 (jhgan/ko-sbert-nli, 싱글톤 공유)
+    ↓
+[4] FAISS 벡터스토어 생성 + retriever
+    ↓
+[5] PromptTemplate (친근한 구어체 응답 가이드)
+    ↓
+[6] 체인 (retriever → 프롬프트 → LLM → 문자열)
+    ↓
+[7] Redis 시맨틱 캐시: 유사 질문이면 LLM 호출 생략
+```
+
+- FASTAPI 부팅시 피드 본문을 `feed_contents.txt`라는 파일로 저장
+- `RecursiveCharacterTextSplitter`로 200자 청크 분할
+- FAISS 벡터스토어 생성 및 retriever 구성
+- HuggingFace 한국어 임베딩 모델(`jhgan/ko-sbert-nli`)
+- 친근한 구어체 응답을 유도하는 PromptTemplate 적용
+- Redis 시맨틱 캐시로 유사 질문 캐시 히트 처리 (`cache_score_threshold` 이하)
+- 캐시 미스 시 LLM 호출 후 질문·답변을 Redis에 저장
+- 응답을 출력
+
+#### 코드
+
+`text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=30)`
+
+피드 본문을 200자 단위로 자르되 30자씩 겹치도록 분할해 검색 시 문맥이 잘리지 않도록 한다.
+
+`results = vector_db.similarity_search_with_score(question, k=1)`
+
+Redis 시맨틱 캐시에서 현재 질문과 가장 비슷한 과거 질문 1개를 거리 점수와 함께 가져온다
+
+`if results and results[0][1] <= settings.cache_score_threshold:`
+
+거리 점수가 임계치 이하이면 캐시 히트로 판정해 LLM 호출을 생략하고 저장된 답변을 그대로 반환한다.
+
+`result = await self.feed_chain.ainvoke(question)`
+
+캐시 미스 시 RAG 체인을 비동기 실행해 피드 컨텍스트를 근거로 답변을 생성한다.
 
 ---
 

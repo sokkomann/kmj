@@ -95,7 +95,7 @@ GlobalGates는 무역 기반 비즈니스 소셜 마켓 플랫폼으로, 국내 
 
 ## 백엔드 담당업무
 
-<img src="./README_images/글로벌게이츠엑셀(김민중).png">
+<img src="./README_images/글로벌게이츠엑셀(김민중).PNG">
 
 ---
 
@@ -145,7 +145,7 @@ GlobalGates는 무역 기반 비즈니스 소셜 마켓 플랫폼으로, 국내 
   구독 시 tbl_subscription 에는 정상 저장되지만 tbl_payment_subscribe 에는 저장되지 않음.  
   서버 콘솔창 확인 결과 결제 금액 amount 가 null 로 들어옴.  
 
-<img src="./README_images/debug/Subscribe-2.png">
+<img src="./README_images/debug/Subscribe-2.PNG">
 
 - 해결
 ```js
@@ -183,6 +183,8 @@ body: JSON.stringify({
 사전에 학습된 분류 모델(`pkl/ad_tag_model.pkl`)과 LabelEncoder(`pkl/ad_tag_encoded.pkl`)를 가져와서,  
 형태소 분석으로 추출한 명사를 입력 피처로 사용한다.
 
+<img src="./README_images/ai_images/광고태그.PNG">
+
 #### 작동
 
 - Konlpy Okt 기반 한국어 명사 추출
@@ -208,6 +210,8 @@ body: JSON.stringify({
 작성 중인 글과 가장 비슷한 기존 게시글들을 찾아 그 조회수를 가중 평균하여 예상 조회수를 추정한다.  
 서버 실행시 `피드목록` 에서 게시글들을 모두 읽어와 TFIDF로 미리 구축해 두고,  
 요청이 들어오면 새 글을 동일하게 변환해 코사인 유사도를 계산합니다.
+
+<img src="./README_images/ai_images/조회수예상.PNG">
 
 #### 작동
 
@@ -240,6 +244,8 @@ body: JSON.stringify({
 사이트에 올라온 피드를 활용해 사용자의 질문에 답하는 RAG 챗봇으로,  
 LangChain + FAISS로 벡터스토어를 구성하고, Redis를 활용한  
 시맨틱 캐시로 비슷한 질문은 LLM 호출 없이 즉시 응답한다.
+
+<img src="./README_images/ai_images/게시물챗봇.PNG">
 
 #### 작동
 

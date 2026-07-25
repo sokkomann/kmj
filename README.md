@@ -183,7 +183,7 @@ body: JSON.stringify({
 사전에 학습된 분류 모델(`pkl/ad_tag_model.pkl`)과 LabelEncoder(`pkl/ad_tag_encoded.pkl`)를 가져와서,  
 형태소 분석으로 추출한 명사를 입력 피처로 사용한다.
 
-<img src="./README_images/ai_images/광고태그.PNG">
+<img src="./README_images/ai_images/광고태그.png">
 
 #### 작동
 
@@ -245,7 +245,7 @@ body: JSON.stringify({
 LangChain + FAISS로 벡터스토어를 구성하고, Redis를 활용한  
 시맨틱 캐시로 비슷한 질문은 LLM 호출 없이 즉시 응답한다.
 
-<img src="./README_images/ai_images/게시물챗봇.PNG">
+<img src="./README_images/ai_images/게시물챗봇.png">
 
 #### 작동
 
